@@ -21,15 +21,28 @@ java {
 }
 
 repositories {
-    mavenLocal()
+    //mavenLocal()
     mavenCentral()
     maven { url 'https://repo.spring.io/snapshot' }
     maven { url 'https://repo.spring.io/milestone' }
+
+    // 1. GitHub Packagesの読み込み設定
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/hanbingcheng/petstore-platform-common")
+
+        credentials {
+            // ローカル（gradle.properties）または CI環境（GitHub Actionsの環境変数）からトークンを取得
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+
 }
 
 dependencies {
     // ===== 共通ライブラリ（Maven座標で参照） =====
-    implementation 'com.example.petstore:common:1.0.0'
+    implementation 'com.example.petstore:common:1.0.2'
 
     // ===== Spring Boot =====
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -187,6 +200,7 @@ jacocoTestCoverageVerification {
 // テスト後に自動でカバレッジレポート生成
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs '--enable-native-access=ALL-UNNAMED'
     testLogging {
         events = ['passed', 'skipped', 'failed']
         exceptionFormat = 'full'

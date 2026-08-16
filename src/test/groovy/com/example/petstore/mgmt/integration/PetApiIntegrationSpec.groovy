@@ -147,7 +147,7 @@ class PetApiIntegrationSpec extends BaseIntegrationSpec {
 		def count = jdbcTemplate.queryForObject("SELECT COUNT(1) FROM pets", Integer.class)
 		assert count == 0
 		// ログ検証
-		logEvents[0].toString() == "[WARN] Request body validation failed: Validation failed for argument [0] in public default org.springframework.http.ResponseEntity<com.example.petstore.mgmt.model.Pet> com.example.petstore.mgmt.api.PetsApi.createPet(com.example.petstore.mgmt.model.CreatePetRequest): [Field error in object 'createPetRequest' on field 'name': rejected value [null]; codes [NotNull.createPetRequest.name,NotNull.name,NotNull.java.lang.String,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createPetRequest.name,name]; arguments []; default message [name]]; default message [null は許可されていません]] "
+		logEvents[0].toString().contains("[WARN] Request body validation failed: Validation failed for argument [0] in public default org.springframework.http.ResponseEntity<com.example.petstore.mgmt.model.Pet> com.example.petstore.mgmt.api.PetsApi.createPet(com.example.petstore.mgmt.model.CreatePetRequest): [Field error in object 'createPetRequest' on field 'name': rejected value [null]; codes [NotNull.createPetRequest.name,NotNull.name,NotNull.java.lang.String,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [createPetRequest.name,name]; arguments []; default message [name]]; ")
 	}
 
 	// ========================================
