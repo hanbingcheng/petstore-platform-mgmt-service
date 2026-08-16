@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.petstore.mgmt.mapper.PetMapper">
+
+    <resultMap id="petResultMap" type="com.example.petstore.mgmt.entity.PetEntity">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="tags" ofType="string" javaType="list">
+            <result column="tag"/>
+        </collection>
+    </resultMap>
+
+    <select id="findAll" resultMap="petResultMap">
+        SELECT p.*, pt.tag FROM pets p
+        LEFT JOIN pet_tags pt ON p.id = pt.pet_id
+        <where>
+            <if test="status != null and status != ''">AND p.status = #{status}</if>
+            <if test="categoryId != null">AND p.category_id = #{categoryId}</if>
+        </where>
+        ORDER BY p.id
+    </select>
+    <select id="findById" resultMap="petResultMap">
+        SELECT p.*, pt.tag FROM pets p
+        LEFT JOIN pet_tags pt ON p.id = pt.pet_id WHERE p.id = #{id}
+    </select>
+    <select id="findByNameAndCategoryId" resultMap="petResultMap">
+        SELECT * FROM pets WHERE name = #{name} AND category_id = #{categoryId}
+    </select>
+    <select id="existsByNameAndCategoryId" resultType="boolean">
+        SELECT COUNT(1) > 0 FROM pets WHERE name = #{name} AND category_id = #{categoryId}
+    </select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pets (name, category_id, status, created_at, updated_at)
+        VALUES (#{name}, #{categoryId}, #{status}, NOW(), NOW())
+    </insert>
+    <update id="update">
+        UPDATE pets SET name = #{name}, category_id = #{categoryId},
+        status = #{status}, updated_at = NOW() WHERE id = #{id}
+    </update>
+    <update id="updateStatus">
+        UPDATE pets SET status = #{status}, updated_at = NOW() WHERE id = #{id}
+    </update>
+    <delete id="deleteById">
+        DELETE FROM pets WHERE id = #{id}
+    </delete>
+    <select id="countByCategoryId" resultType="long">
+        SELECT COUNT(1) FROM pets WHERE category_id = #{categoryId}
+    </select>
+</mapper>

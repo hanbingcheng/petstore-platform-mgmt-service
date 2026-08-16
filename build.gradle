@@ -1,0 +1,217 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.diffplug.spotless' version '7.0.2'       // コードフォーマット
+    id 'com.github.spotbugs' version '6.1.7'          // 静的解析（潜在バグ検出）
+    id 'jacoco'                                        // カバレッジレポート
+    id 'org.openapi.generator' version '7.10.0'
+}
+
+group = 'com.example.petstore'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = '25'
+    targetCompatibility = '25'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+dependencies {
+    // ===== 共通ライブラリ（Maven座標で参照） =====
+    implementation 'com.example.petstore:common:1.0.0'
+
+    // ===== Spring Boot =====
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-aspectj'
+
+    // ===== MyBatis =====
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:4.1.0'
+
+    // ===== データベース =====
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // ===== Lombok =====
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // ===== Groovy（テスト用） =====
+    testImplementation 'org.apache.groovy:groovy:5.0.7'
+    testImplementation 'org.apache.groovy:groovy-json:5.0.7'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.spockframework:spock-spring:2.4-groovy-5.0'
+    testImplementation 'org.spockframework:spock-core:2.4-groovy-5.0'
+    // 結合試験楊
+    testImplementation platform("org.testcontainers:testcontainers-bom:1.20.4")
+    testImplementation 'org.testcontainers:testcontainers'
+    testImplementation 'org.testcontainers:mysql'
+    testImplementation 'org.testcontainers:spock'
+    implementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
+    testImplementation 'org.springframework.boot:spring-boot-starter-restclient'
+    testImplementation 'org.springframework.boot:spring-boot-resttestclient'
+    // ===== Flyway（DBマイグレーション）=====
+    testImplementation 'org.flywaydb:flyway-core'
+    testImplementation 'org.flywaydb:flyway-mysql'   // MySQL 8 対応モジュール
+
+    // ===== 開発支援 =====
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // ===== SpotBugs Annotation =====
+    compileOnly 'com.github.spotbugs:spotbugs-annotations:4.8.6'
+
+    // ===== OpenAPI =====
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+}
+
+// ========================================
+// OpenAPI Generator設定
+// ========================================
+openApiGenerate {
+    generatorName = 'spring'
+    inputSpec = "$projectDir/openapi/mgmt-api.yaml".toString()
+    outputDir = "$buildDir/generated".toString()
+    apiPackage = 'com.example.petstore.mgmt.api'
+    modelPackage = 'com.example.petstore.mgmt.model'
+    configOptions = [
+        delegatePattern: 'true',
+        useSpringBoot3: 'true',
+        openApiNullable: 'false',
+        dateLibrary: 'java8-localdatetime',
+        useLombok: 'true',
+        useSwaggerUI: 'false',
+        generatePom: 'false',
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/src/main/java"
+            // OpenAPI Generator が自動生成する Application クラスを除外
+            // （自前の UserApplication.java と競合するため）
+            exclude '**/OpenApiGeneratorApplication.java'
+        }
+    }
+}
+
+
+// ========================================
+// Spotless: コードフォーマット自動統一
+// ========================================
+spotless {
+    java {
+        googleJavaFormat('1.28.0')
+        removeUnusedImports()
+        endWithNewline()
+        trimTrailingWhitespace()
+    }
+    groovy {
+        importOrder('groovy', 'java', 'javax', 'org', 'com', '')
+        greclipse()
+        endWithNewline()
+        trimTrailingWhitespace()
+    }
+    format 'misc', {
+        target '*.gradle', '*.yml', '*.yaml', '.gitignore'
+        endWithNewline()
+        trimTrailingWhitespace()
+    }
+}
+
+// ========================================
+// SpotBugs: 静的解析（潜在バグ検出）
+// ========================================
+spotbugs {
+    ignoreFailures = false
+    excludeFilter = file("$rootDir/config/spotbugs/spotbugs-exclude.xml")
+}
+
+tasks.withType(project.buildscript.classLoader.loadClass('com.github.spotbugs.snom.SpotBugsTask') as Class).configureEach {
+    reports {
+        html { enabled = true }
+        xml { enabled = false }
+    }
+}
+
+spotbugsTest {
+    enabled = false
+}
+
+// ========================================
+// JaCoCo: カバレッジレポート
+// ========================================
+jacoco {
+    toolVersion = '0.8.13'
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80  // 80%以上
+            }
+            excludes = [
+                'com.example.petstore.**.api.*',
+                'com.example.petstore.**.model.*'
+            ]
+        }
+    }
+}
+
+// テスト後に自動でカバレッジレポート生成
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events = ['passed', 'skipped', 'failed']
+        exceptionFormat = 'full'
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events = ['passed', 'skipped', 'failed']
+        exceptionFormat = 'full'
+    }
+}
+
+// ビルド時に自動でフォーマット→静的解析→テスト→カバレッジを実行
+tasks.named('build') {
+    dependsOn spotlessApply
+}
+tasks.named('check') {
+    dependsOn spotbugsMain
+}
+
+compileJava.dependsOn tasks.openApiGenerate
+compileTestGroovy.dependsOn tasks.openApiGenerate
+
+tasks.named('spotlessJava') {
+    dependsOn tasks.named('openApiGenerate')
+}

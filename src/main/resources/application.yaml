@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: mgmt-service
+  config:
+    import: classpath:cmm-log-messages.yml
+  datasource:
+    url: jdbc:mysql://localhost:3306/petstore?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+mybatis:
+  type-aliases-package: com.example.petstore.mgmt.entity
+  mapper-locations: "classpath:mapper/*.xml"
+  configuration:
+    map-underscore-to-camel-case: true
+
+server:
+  port: 8083
+
+logging:
+  level:
+    com.example.petstore.mgmt: DEBUG
+    org.mybatis: DEBUG
