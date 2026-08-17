@@ -21,10 +21,8 @@ java {
 }
 
 repositories {
-    //mavenLocal()
+    mavenLocal()
     mavenCentral()
-    maven { url 'https://repo.spring.io/snapshot' }
-    maven { url 'https://repo.spring.io/milestone' }
 
     // 1. GitHub Packagesの読み込み設定
     maven {
