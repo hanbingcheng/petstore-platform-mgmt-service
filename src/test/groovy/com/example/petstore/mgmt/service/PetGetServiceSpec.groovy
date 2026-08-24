@@ -22,7 +22,7 @@ class PetGetServiceSpec extends Specification {
 	def "IDでペットを取得できること"() {
 		given:
 		def entity = PetEntity.builder()
-				.id(1L).name("Dog").status("available").tags(["tag1"])
+				.id(1L).name("Dog").categoryId(1L).categoryName("Dog").status("available").tags(["tag1"])
 				.build()
 
 		when:
@@ -32,6 +32,8 @@ class PetGetServiceSpec extends Specification {
 		then:
 		result.id == 1L
 		result.name == "Dog"
+		result.category.id == 1L
+		result.category.name == "Dog"
 		result.status == Pet.StatusEnum.fromValue("available")
 		result.tags == ["tag1"]
 	}

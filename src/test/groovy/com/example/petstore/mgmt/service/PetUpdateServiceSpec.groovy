@@ -23,7 +23,7 @@ class PetUpdateServiceSpec extends Specification {
 	def "ペットの名前とステータスを更新できること"() {
 		given:
 		def entity = PetEntity.builder()
-				.id(1L).name("Old Name").status("available")
+				.id(1L).name("Old Name").categoryId(1L).categoryName("Dog").status("available")
 				.build()
 		def request = new UpdatePetRequest()
 				.name("New Name")
@@ -36,6 +36,8 @@ class PetUpdateServiceSpec extends Specification {
 		then:
 		1 * petMapper.update(_ as PetEntity)
 		result.name == "New Name"
+		result.category.id == 1L
+		result.category.name == "Dog"
 		result.status == Pet.StatusEnum.fromValue("sold")
 	}
 

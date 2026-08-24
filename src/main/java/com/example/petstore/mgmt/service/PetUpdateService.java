@@ -5,6 +5,7 @@ import com.example.petstore.common.logging.StartEndLog;
 import com.example.petstore.mgmt.entity.PetEntity;
 import com.example.petstore.mgmt.mapper.PetMapper;
 import com.example.petstore.mgmt.message.MgmtMessageCode;
+import com.example.petstore.mgmt.model.Category;
 import com.example.petstore.mgmt.model.Pet;
 import com.example.petstore.mgmt.model.UpdatePetRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class PetUpdateService {
     return new Pet()
         .id(entity.getId())
         .name(entity.getName())
+        .category(new Category().id(entity.getCategoryId()).name(entity.getCategoryName()))
         .status(Pet.StatusEnum.fromValue(entity.getStatus()))
         .tags(entity.getTags());
   }

@@ -12,6 +12,7 @@ public class PetEntity {
   private Long id;
   private String name;
   private Long categoryId;
+  private String categoryName;
   private String status;
   private List<String> tags;
   private LocalDateTime createdAt;

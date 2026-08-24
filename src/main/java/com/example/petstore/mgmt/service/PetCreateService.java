@@ -5,6 +5,7 @@ import com.example.petstore.common.logging.StartEndLog;
 import com.example.petstore.mgmt.entity.PetEntity;
 import com.example.petstore.mgmt.mapper.PetMapper;
 import com.example.petstore.mgmt.message.MgmtMessageCode;
+import com.example.petstore.mgmt.model.Category;
 import com.example.petstore.mgmt.model.CreatePetRequest;
 import com.example.petstore.mgmt.model.Pet;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class PetCreateService {
 
   @StartEndLog
   public Pet execute(CreatePetRequest request) {
+
     if (petMapper.existsByNameAndCategoryId(request.getName(), request.getCategoryId())) {
       throw new DuplicateResourceException(
           MgmtMessageCode.PET_DUPLICATE.getCode(),
@@ -38,6 +40,7 @@ public class PetCreateService {
     return new Pet()
         .id(entity.getId())
         .name(entity.getName())
+        .category(new Category().id(entity.getCategoryId()).name(entity.getCategoryName()))
         .status(Pet.StatusEnum.fromValue(entity.getStatus()))
         .tags(entity.getTags());
   }

@@ -2,6 +2,7 @@ package com.example.petstore.mgmt.service;
 
 import com.example.petstore.common.logging.StartEndLog;
 import com.example.petstore.mgmt.mapper.PetMapper;
+import com.example.petstore.mgmt.model.Category;
 import com.example.petstore.mgmt.model.Pet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,9 @@ public class PetListService {
                 new Pet()
                     .id(entity.getId())
                     .name(entity.getName())
+                    .createdAt(entity.getCreatedAt())
+                    .category(
+                        new Category().id(entity.getCategoryId()).name(entity.getCategoryName()))
                     .status(Pet.StatusEnum.fromValue(entity.getStatus()))
                     .tags(entity.getTags()))
         .collect(Collectors.toList());

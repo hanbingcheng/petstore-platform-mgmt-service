@@ -207,6 +207,7 @@ tasks.named('test') {
 
 tasks.named('test') {
     useJUnitPlatform()
+    jvmArgs '--enable-native-access=ALL-UNNAMED', '-XX:+EnableDynamicAgentLoading'
     testLogging {
         events = ['passed', 'skipped', 'failed']
         exceptionFormat = 'full'

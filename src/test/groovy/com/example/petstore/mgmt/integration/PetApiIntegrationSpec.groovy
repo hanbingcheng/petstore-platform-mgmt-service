@@ -49,7 +49,7 @@ class PetApiIntegrationSpec extends BaseIntegrationSpec {
 		logEvents[0].level == Level.INFO
 		logEvents[0].formattedMessage == "[I000001] [PetCreateService]処理開始1: input={request=class CreatePetRequest {\n    name: Integration Test Pet\n    categoryId: 1\n    status: available\n    tags: [test, integration]\n}}"
 		logEvents[logEvents.size()-1].level == Level.INFO
-		logEvents[logEvents.size()-1].formattedMessage == "[I000002] [PetCreateService]処理完了: result=class Pet {\n    id: 1\n    name: Integration Test Pet\n    category: null\n    status: available\n    tags: null\n    createdAt: null\n}"
+		logEvents[logEvents.size()-1].formattedMessage == "[I000002] [PetCreateService]処理完了: result=class Pet {\n    id: 1\n    name: Integration Test Pet\n    category: class Category {\n        id: 1\n        name: null\n        description: null\n    }\n    status: available\n    tags: null\n    createdAt: null\n}"
 
 		when:
 		def getResponse = null
@@ -67,7 +67,7 @@ class PetApiIntegrationSpec extends BaseIntegrationSpec {
 		logEvents[0].level == Level.INFO
 		logEvents[0].formattedMessage == "[I000001] [PetGetService]処理開始1: input={id=1}"
 		logEvents[logEvents.size()-1].level == Level.INFO
-		logEvents[logEvents.size()-1].formattedMessage == "[I000002] [PetGetService]処理完了: result=class Pet {\n    id: 1\n    name: Integration Test Pet\n    category: null\n    status: available\n    tags: []\n    createdAt: null\n}"
+		logEvents[logEvents.size()-1].formattedMessage == "[I000002] [PetGetService]処理完了: result=class Pet {\n    id: 1\n    name: Integration Test Pet\n    category: class Category {\n        id: 1\n        name: Dog\n        description: null\n    }\n    status: available\n    tags: []\n    createdAt: null\n}"
 	}
 
 	// ========================================
@@ -105,14 +105,22 @@ class PetApiIntegrationSpec extends BaseIntegrationSpec {
 		logEvents[logEvents.size() - 1].formattedMessage == """[I000002] [PetListService]処理完了: result=[class Pet {
     id: 1
     name: Available Pet
-    category: null
+    category: class Category {
+        id: 1
+        name: Dog
+        description: null
+    }
     status: available
     tags: []
     createdAt: null
 }, class Pet {
     id: 2
     name: Sold Pet
-    category: null
+    category: class Category {
+        id: 1
+        name: Dog
+        description: null
+    }
     status: available
     tags: []
     createdAt: null
@@ -239,7 +247,11 @@ class PetApiIntegrationSpec extends BaseIntegrationSpec {
 		logEvents[logEvents.size() - 1].formattedMessage == """[I000002] [PetUpdateService]処理完了: result=class Pet {
     id: 1
     name: After Update
-    category: null
+    category: class Category {
+        id: 1
+        name: Dog
+        description: null
+    }
     status: sold
     tags: []
     createdAt: null

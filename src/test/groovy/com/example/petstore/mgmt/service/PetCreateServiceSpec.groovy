@@ -35,6 +35,7 @@ class PetCreateServiceSpec extends Specification {
 		then:
 		result.id == 100L
 		result.name == "Hamster"
+		result.category.id == 1L
 		result.status == Pet.StatusEnum.fromValue("available")
 	}
 

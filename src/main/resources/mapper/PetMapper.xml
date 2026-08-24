@@ -7,6 +7,7 @@
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
         <result property="status" column="status"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
@@ -16,7 +17,8 @@
     </resultMap>
 
     <select id="findAll" resultMap="petResultMap">
-        SELECT p.*, pt.tag FROM pets p
+        SELECT p.*, c.name as category_name, pt.tag FROM pets p
+        INNER JOIN categories c ON p.category_id = c.id
         LEFT JOIN pet_tags pt ON p.id = pt.pet_id
         <where>
             <if test="status != null and status != ''">AND p.status = #{status}</if>
@@ -25,7 +27,8 @@
         ORDER BY p.id
     </select>
     <select id="findById" resultMap="petResultMap">
-        SELECT p.*, pt.tag FROM pets p
+        SELECT p.*, c.name as category_name, pt.tag FROM pets p
+        INNER JOIN categories c ON p.category_id = c.id
         LEFT JOIN pet_tags pt ON p.id = pt.pet_id WHERE p.id = #{id}
     </select>
     <select id="findByNameAndCategoryId" resultMap="petResultMap">

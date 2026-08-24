@@ -4,7 +4,7 @@ spring:
   config:
     import: classpath:cmm-log-messages.yml
   datasource:
-    url: jdbc:mysql://localhost:3306/petstore?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/petstore?useSSL=false&serverTimezone=Asia/Tokyo&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

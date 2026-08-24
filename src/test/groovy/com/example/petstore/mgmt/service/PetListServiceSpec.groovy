@@ -21,8 +21,8 @@ class PetListServiceSpec extends Specification {
 
 	def "ペット一覧を取得できること"() {
 		given:
-		def entity1 = PetEntity.builder().id(1L).name("Dog").status("available").tags(["friendly"]).build()
-		def entity2 = PetEntity.builder().id(2L).name("Cat").status("available").tags([]).build()
+		def entity1 = PetEntity.builder().id(1L).name("Dog").categoryId(1L).categoryName("Dog").status("available").tags(["friendly"]).build()
+		def entity2 = PetEntity.builder().id(2L).name("Cat").categoryId(2L).categoryName("Cat").status("available").tags([]).build()
 
 		when:
 		petMapper.findAll(null, null) >> [entity1, entity2]
@@ -32,6 +32,8 @@ class PetListServiceSpec extends Specification {
 		result.size() == 2
 		result[0].id == 1L
 		result[0].name == "Dog"
+		result[0].category.id == 1L
+		result[0].category.name == "Dog"
 		result[0].status == Pet.StatusEnum.fromValue("available")
 		result[0].tags == ["friendly"]
 		result[1].name == "Cat"
