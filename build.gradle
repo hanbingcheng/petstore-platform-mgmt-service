@@ -40,7 +40,7 @@ repositories {
 
 dependencies {
     // ===== 共通ライブラリ（Maven座標で参照） =====
-    implementation 'com.example.petstore:common:1.0.2'
+    implementation 'com.example.petstore:common:1.1.1'
 
     // ===== Spring Boot =====
     implementation 'org.springframework.boot:spring-boot-starter-web'

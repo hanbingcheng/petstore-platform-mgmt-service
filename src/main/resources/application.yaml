@@ -25,6 +25,20 @@ server:
   port: 8083
 
 logging:
+  structured:
+    format:
+      console: logstash      # コンソール出力を JSON 化
+      # file: logstash   # ファイル出力も JSON 化する場合
+    json:
+      # 不要なデフォルトフィールドを削除（例: level_value や @version を非表示に）
+      exclude:
+        - "level_value"
+        - "@version"
+        - "logger_name"
+        - "thread_name"
+        - "tags"
+  # file:
+  #   name: logs/application.log
   level:
     com.example.petstore.mgmt: DEBUG
     org.mybatis: DEBUG
